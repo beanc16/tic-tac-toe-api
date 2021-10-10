@@ -61,7 +61,17 @@ namespace TicTacToeApi
 
                 routes.MapRoute(
                     name: "game",
-                    template: "{controller=Game}/{action=Index}/{id?}"
+                    template: "{controller=Game}/{action=Index}/{gameId?}"
+                );
+
+                routes.MapRoute(
+                    name: "moves",
+                    template: "/game/{gameId}/{controller=Moves}/{action=Index}"
+                );
+
+                routes.MapRoute(
+                    name: "players",
+                    template: "/game/{gameId}/{controller=Players}/{action=Index}"
                 );
             });
         }
