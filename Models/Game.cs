@@ -43,9 +43,9 @@ namespace TicTacToeApi.Models
                 Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
             };
 
-            // Expire 2 minutes from the time of creation
+            // Expire 5 minutes from the time of creation
             ExpireAt = DateTime.Now;
-            ExpireAt.AddMinutes(2);
+            ExpireAt.AddMinutes(5);
         }
 
 
