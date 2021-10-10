@@ -33,5 +33,39 @@ namespace TicTacToeApi.Models
         {
             return new Board(this);
         }
+
+
+
+        public override string ToString()
+        {
+            string template = "Board: {{\n" +
+                "\t\"Rows\": {0}\n" +
+            "}}";
+
+            string rowStr = "[\n";
+            foreach (BoardRow row in Rows)
+            {
+                rowStr += "\t" + row.ToStringTabbed() + "\n";
+            }
+            rowStr += "\t]";
+
+            return string.Format(template, rowStr);
+        }
+
+        public string ToStringTabbed()
+        {
+            string template = "\t\tBoard: {{\n" +
+                "\t\t\t\"Rows\": {0}\n" +
+            "\t\t}}";
+
+            string rowStr = "[\n";
+            foreach (BoardRow row in Rows)
+            {
+                rowStr += "\t\t\t" + row.ToStringDoubleTabbed() + "\n";
+            }
+            rowStr += "\t\t\t]";
+
+            return string.Format(template, rowStr);
+        }
     }
 }

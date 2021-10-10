@@ -66,5 +66,38 @@ namespace TicTacToeApi.Models
                 Builders<Game>.Filter;
             return filterBuilder.Eq("_id", id);
         }
+
+
+
+        public override string ToString()
+        {
+            string template = "Game: {{\n" +
+                "\t\"ID\": {0}\n" +
+                "\t\"Status\": {1}\n" +
+                "\t\"MoveHistory\": {2}\n" +
+                "\t\"Players\": [\n" +
+                    "\t\t{3},\n" +
+                    "\t\t{4}\n" +
+                "\t]\n" +
+                "\t\"ExpireAt\": {5}\n" +
+            "}}";
+
+            string moveHistoryStr = "[\n";
+            foreach (Board board in MoveHistory)
+            {
+                moveHistoryStr += board.ToStringTabbed() + "\n";
+            }
+            moveHistoryStr += "\t]";
+
+            return string.Format(
+                template, 
+                Id, 
+                Status, 
+                moveHistoryStr, 
+                Players[0].ToStringTabbed(), 
+                Players[1].ToStringTabbed(), 
+                ExpireAt
+            );
+        }
     }
 }
