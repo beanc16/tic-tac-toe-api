@@ -44,8 +44,7 @@ namespace TicTacToeApi.Models
             };
 
             // Expire 5 minutes from the time of creation
-            ExpireAt = DateTime.Now;
-            ExpireAt.AddMinutes(5);
+            ExpireAt = DateTime.Now.AddMinutes(5);
         }
 
 
