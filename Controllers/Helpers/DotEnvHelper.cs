@@ -37,6 +37,8 @@ namespace DotEnvHelpers
         
         public static string GetEnvVariable(string key)
         {
+            RefreshEnvVariables();
+            System.Console.WriteLine("\n\n\n_env: " + _env);
             return _env[key];
         }
     }
