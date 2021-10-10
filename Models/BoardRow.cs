@@ -24,22 +24,7 @@ namespace TicTacToeApi.Models
         [JsonConstructor]   // Called on JsonConvert.DeserializeObject
         public BoardRow(List<string> columns)
         {
-            Predicate<string> isValidBoardValue = 
-                (col) => (col == null || 
-                          col.ToLower() == "null" || 
-                          col.ToUpper() == "X" || 
-                          col.ToUpper() == "O");
-            
-            /* Is not null, 
-             * a list with exactly 3 values, 
-             * and a list with all elements that are either:
-             * - "X"
-             * - "O"
-             * - "null"
-             * - null
-             */
-            if (columns != null && columns.Count == 3 && 
-                columns.TrueForAll(isValidBoardValue))
+            if (this.IsValidColumnList(columns))
             {
                 Columns = columns;
             }
@@ -52,6 +37,28 @@ namespace TicTacToeApi.Models
                     BoardMark.EMPTY,
                 });
             }
+        }
+
+
+
+        public bool IsValidColumnList(List<string> columns)
+        {
+            Predicate<string> isValidBoardValue = 
+                (col) => (col == null || 
+                          col.ToLower() == "null" || 
+                          col.ToUpper() == "X" || 
+                          col.ToUpper() == "O");
+            
+            /* Is not null, 
+             * a list with exactly 3 values, 
+             * and a list with all elements that are either:
+             * - null
+             * - "null"
+             * - "X"
+             * - "O"
+             */
+            return (columns != null && columns.Count == 3 && 
+                    columns.TrueForAll(isValidBoardValue));
         }
 
 
@@ -98,7 +105,7 @@ namespace TicTacToeApi.Models
                 {
                     col = "null,";
                 }
-                columnStr += "\t\t\t" + col + "\n";
+                columnStr += "\t\t\t\t" + col + "\n";
             }
             columnStr += "\t\t\t]";
 
@@ -119,7 +126,7 @@ namespace TicTacToeApi.Models
                 {
                     col = "null,";
                 }
-                columnStr += "\t\t\t\t\t" + col + "\n";
+                columnStr += "\t\t\t\t\t\t" + col + "\n";
             }
             columnStr += "\t\t\t\t\t]";
 

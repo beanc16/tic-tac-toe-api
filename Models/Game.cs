@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -19,7 +20,7 @@ namespace TicTacToeApi.Models
         public List<Board> MoveHistory { get; set; }
 
         [BsonElement("players")]
-        public Player[] Players { get; set; }
+        public List<Player> Players { get; set; }
 
         [BsonElement("expireAt")]
         public DateTime ExpireAt { get; set; }
@@ -33,16 +34,77 @@ namespace TicTacToeApi.Models
             Status = GameStatus.IN_PROGRESS;
 
             // Add a blank board to the history
-            MoveHistory = new List<Board>();
-            Board board = new Board();
-            MoveHistory.Add(board);
+            MoveHistory = new List<Board>(new Board[] {
+                new Board(),
+            });
 
-            // Add two new players to the tuple
-            Players = new Player[] {
+            // Add two new players to the list
+            Players = new List<Player>(new Player[] {
                 Player.FromBoardMarkAndIsTurn(BoardMark.X, true),
                 Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
-            };
+            });
 
+            // Expire 5 minutes from the time of creation
+            ExpireAt = DateTime.Now.AddMinutes(5);
+        }
+
+        [JsonConstructor]   // Called on JsonConvert.DeserializeObject
+        public Game(string id, string status, List<Board> moveHistory,
+                    List<Player> players, DateTime expireAt)
+        {
+            // Id
+            if (id != null && id.Length > 0)
+            {
+                Id = id;
+            }
+            else
+            {
+                Id = Guid.NewGuid().ToString();
+            }
+
+            // Status
+            if (status != null && status.Length > 0)
+            {
+                Status = status;
+            }
+            else
+            {
+                Status = GameStatus.IN_PROGRESS;
+            }
+
+            // MoveHistory
+            if (moveHistory != null && moveHistory.Count > 0)
+            {
+                MoveHistory = moveHistory;
+            }
+            else
+            {
+                MoveHistory = new List<Board>(new Board[] {
+                    new Board(),
+                });
+            }
+
+            // Players
+            if (players != null && players.Count == 2)
+            {
+                Players = players;
+            }
+            else if (players != null && players.Count == 1)
+            {
+                Players = new List<Player>(new Player[] {
+                    players[0],
+                    Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
+                });
+            }
+            else
+            {
+                Players = new List<Player>(new Player[] {
+                    Player.FromBoardMarkAndIsTurn(BoardMark.X, true),
+                    Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
+                });
+            }
+
+            // Ignore expireAt parameter, only use auto-generated ExpireAt
             // Expire 5 minutes from the time of creation
             ExpireAt = DateTime.Now.AddMinutes(5);
         }
