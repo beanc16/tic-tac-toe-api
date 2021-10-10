@@ -14,6 +14,8 @@ namespace TicTacToeApi
     {
         public static void Main(string[] args)
         {
+            dotenv.net.DotEnv.Load();
+            Console.WriteLine("\n\n\nLOADING ENV VARIABLES\n\n\n");
             CreateWebHostBuilder(args).Build().Run();
         }
 
