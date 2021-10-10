@@ -35,11 +35,6 @@ namespace TicTacToeApi.Controllers
             return Ok(games);
         }
 
-        /* TODO: Start endpoint for:
-         * RULES:
-         * - Game cannot consist of two CPUs (must have at least one player)
-         */
-
         // /game/start
         [HttpPost("start")]
         public async Task<ActionResult> Start(string formKey)
