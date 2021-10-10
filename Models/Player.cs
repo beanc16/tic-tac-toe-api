@@ -37,6 +37,11 @@ namespace TicTacToeApi.Models
             IsTurn = isTurn;
         }
 
+        public static Player FromBoardMarkIsCpuAndIsTurn(string mark, bool isCpu, bool isTurn)
+        {
+            return new Player(GenerateRandomId(), GenerateRandomName(), mark, isCpu, isTurn);
+        }
+
         public static Player FromBoardMarkAndIsTurn(string mark, bool isTurn)
         {
             return new Player(GenerateRandomId(), GenerateRandomName(), mark, false, isTurn);

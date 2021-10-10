@@ -87,13 +87,23 @@ namespace TicTacToeApi.Models
             // Players
             if (players != null && players.Count == 2)
             {
-                Players = players;
+                if (players[0].IsCpu && players[1].IsCpu)
+                {
+                    Players = new List<Player>(new Player[] {
+                        Player.FromBoardMarkAndIsTurn(BoardMark.X, true),
+                        Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
+                    });
+                }
+                else
+                {
+                    Players = players;
+                }
             }
             else if (players != null && players.Count == 1)
             {
                 Players = new List<Player>(new Player[] {
                     players[0],
-                    Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
+                    Player.FromBoardMarkIsCpuAndIsTurn(BoardMark.O, !players[0].IsCpu, false),
                 });
             }
             else
