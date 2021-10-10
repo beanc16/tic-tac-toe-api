@@ -29,7 +29,7 @@ namespace TicTacToeApi.Models
 
         // 4 parameters
 
-        public Player(string id, string name, BoardMark mark, bool isCpu)
+        public Player(string id, string name, string mark, bool isCpu)
         {
             if (id == null)
             {
@@ -48,7 +48,7 @@ namespace TicTacToeApi.Models
 
         // 3 parameters
 
-        public Player(string id, string name, BoardMark mark)
+        public Player(string id, string name, string mark)
             : this(id, name, mark, false)
         {
         }
@@ -61,14 +61,14 @@ namespace TicTacToeApi.Models
             IsCpu = isCpu;
         }
 
-        public static Player FromIdMarkAndIsCpu(string id, BoardMark mark, bool isCpu)
+        public static Player FromIdMarkAndIsCpu(string id, string mark, bool isCpu)
         {
             return new Player(id, GenerateRandomName(), mark, isCpu);
         }
 
-        public Player(string name, BoardMark mark, bool isCpu)
-            : this(GenerateRandomId(), name, mark, isCpu)
+        public static Player FromNameMarkAndIsCpu(string name, string mark, bool isCpu)
         {
+            return new Player(GenerateRandomId(), name, mark, isCpu);
         }
 
         // 2 parameters
@@ -81,7 +81,7 @@ namespace TicTacToeApi.Models
             IsCpu = false;
         }
 
-        public static Player FromIdAndMark(string id, BoardMark mark)
+        public static Player FromIdAndMark(string id, string mark)
         {
             return new Player(id, GenerateRandomName(), mark);
         }
@@ -91,9 +91,9 @@ namespace TicTacToeApi.Models
             return new Player(id, GenerateRandomName(), isCpu);
         }
 
-        public Player(string name, BoardMark mark)
-            : this(GenerateRandomId(), name, mark)
+        public static Player FromNameAndMark(string name, string mark)
         {
+            return new Player(GenerateRandomId(), name, mark);
         }
 
         public Player(string name, bool isCpu)
@@ -101,9 +101,9 @@ namespace TicTacToeApi.Models
         {
         }
 
-        public Player(BoardMark mark, bool isCpu)
-            : this(GenerateRandomId(), GenerateRandomName(), mark, isCpu)
+        public static Player FromMarkAndIsCpu(string mark, bool isCpu)
         {
+            return new Player(GenerateRandomId(), GenerateRandomName(), mark, isCpu);
         }
 
         // 1 parameter
@@ -121,9 +121,9 @@ namespace TicTacToeApi.Models
             IsCpu = false;
         }
 
-        public Player(BoardMark mark)
-            : this(GenerateRandomId(), GenerateRandomName(), mark)
+        public static Player FromBoardMark(string mark)
         {
+            return new Player(GenerateRandomId(), GenerateRandomName(), mark);
         }
 
         public Player(bool isCpu)

@@ -38,7 +38,10 @@ namespace TicTacToeApi.Models
             MoveHistory.Add(board);
 
             // Add two new players to the tuple
-            Players = new Player[] { new Player(), new Player() };
+            Players = new Player[] {
+                Player.FromBoardMark(BoardMark.X),
+                Player.FromBoardMark(BoardMark.O),
+            };
 
             // Expire 1 minute from the time of creation
             ExpireAt = DateTime.Now;
