@@ -22,7 +22,7 @@ namespace TicTacToeApi.Controllers
 
             if (games.Count > 0)
             {
-                Player[] players = games[0].Players;
+                List<Player> players = games[0].Players;
                 return Ok(players);
             }
 
