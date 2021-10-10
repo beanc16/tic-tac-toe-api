@@ -1,4 +1,9 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Data;
+using System.Web;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +13,7 @@ using MongoDB.Driver;
 using TicTacToeApi.Models;
 using TicTacToeApi.Models.Enums;
 using MongoDBHelpers;
+using HttpRequestHelpers;
 
 namespace TicTacToeApi.Controllers
 {
@@ -30,24 +36,29 @@ namespace TicTacToeApi.Controllers
         }
 
         /* TODO: Start endpoint for:
-         * - Get - Passing in no player names (auto-generate both names; neither is CPU)
-         * - Post - Passing in no player names (auto-generate both names; default to same settings as get unless told otherwise)
-         * - Get - Passing in one player name (auto-generate second; auto-generated name is CPU, given name is real player)
-         * - Post - Passing in one player name (auto-generate second; default to same settings as get unless told otherwise)
-         * - Get - Passing in two player names (neither is CPU)
-         * - Post - Passing in two player names (default to same settings as get unless told otherwise))
-         * 
          * RULES:
          * - Game cannot consist of two CPUs (must have at least one player)
          */
 
         // /game/start
-        [HttpGet("start")]
-        public ActionResult Start()
+        [HttpPost("start")]
+        public async Task<ActionResult> Start(string formKey)
         {
-            Game game = new Game();
-            MongoConnection<Game>.InsertOne(Collections.GAMES, game);
-            return Ok(game);
+            string reqStr = await Request.GetRawBodyStringAsync();
+
+            // Sent raw data
+            if (reqStr.Length > 0)
+            {
+                Game game = JsonConvert.DeserializeObject<Game>(reqStr);
+                MongoConnection<Game>.InsertOne(Collections.GAMES, game);
+                return Ok(game);
+            }
+
+            // Sent form data
+            else
+            {
+                return BadRequest("Must post data as content-type application/json");
+            }
         }
 
         // /game/{gameId}
