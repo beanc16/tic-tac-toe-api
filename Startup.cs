@@ -56,6 +56,11 @@ namespace TicTacToeApi
             {
                 routes.MapRoute(
                     name: "default",
+                    template: "{controller=Default}/{action=Index}"
+                );
+
+                routes.MapRoute(
+                    name: "game",
                     template: "{controller=Game}/{action=Index}/{id?}"
                 );
             });
