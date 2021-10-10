@@ -39,8 +39,8 @@ namespace TicTacToeApi.Models
 
             // Add two new players to the tuple
             Players = new Player[] {
-                Player.FromBoardMark(BoardMark.X),
-                Player.FromBoardMark(BoardMark.O),
+                Player.FromBoardMarkAndIsTurn(BoardMark.X, true),
+                Player.FromBoardMarkAndIsTurn(BoardMark.O, false),
             };
 
             // Expire 2 minutes from the time of creation
