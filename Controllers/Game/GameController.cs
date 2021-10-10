@@ -50,8 +50,37 @@ namespace TicTacToeApi.Controllers
             if (reqStr.Length > 0)
             {
                 Game game = JsonConvert.DeserializeObject<Game>(reqStr);
-                MongoConnection<Game>.InsertOne(Collections.GAMES, game);
-                return Ok(game);
+
+                try
+                {
+                    MongoConnection<Game>.InsertOne(Collections.GAMES, game);
+                    return Ok(game);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is MongoBulkWriteException || ex is MongoWriteException)
+                    {
+                        int code = -1;
+                        if (ex is MongoBulkWriteException)
+                        {
+                            code = ((MongoBulkWriteException)ex).WriteConcernError.Code;
+                        }
+                        else if (ex is MongoWriteException)
+                        {
+                            Console.WriteLine("((MongoWriteException)ex): " + ((MongoWriteException)ex));
+                            code = ((MongoWriteException)ex).WriteError.Code;
+                        }
+
+                        if (code == 11000)
+                        {
+                            return Conflict("Error: A game with that ID already exists");
+                        }
+                    }
+
+                    return BadRequest("An unknown error occurred " +
+                                        "when inserting game into " +
+                                        "database");
+                }
             }
 
             // Sent form data
