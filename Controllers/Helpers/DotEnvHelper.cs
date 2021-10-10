@@ -23,6 +23,7 @@ namespace DotEnvHelpers
         
         private static void Load()
         {
+            System.Console.WriteLine("\n\n\nLOADING ENV VARIABLES\n\n\n");
             DotEnv.Load();
         }
 
@@ -30,7 +31,8 @@ namespace DotEnvHelpers
 
         public static void RefreshEnvVariables()
         {
-            _env = DotEnv.Read();
+            Load();
+            Read();
         }
         
         public static string GetEnvVariable(string key)

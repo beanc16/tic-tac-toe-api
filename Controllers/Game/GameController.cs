@@ -14,6 +14,7 @@ using TicTacToeApi.Models;
 using TicTacToeApi.Models.Enums;
 using MongoDBHelpers;
 using HttpRequestHelpers;
+using DotEnvHelpers;
 
 namespace TicTacToeApi.Controllers
 {
@@ -31,6 +32,7 @@ namespace TicTacToeApi.Controllers
         [HttpGet("all")]
         public ActionResult All(string id)
         {
+            DotEnvHelper.RefreshEnvVariables();
             List<Game> games = MongoConnection<Game>.FindAll(Collections.GAMES);
             return Ok(games);
         }
