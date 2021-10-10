@@ -17,6 +17,7 @@ using HttpRequestHelpers;
 
 namespace TicTacToeApi.Controllers
 {
+    // TODO: Better error handling
     [Route("game")]
     public class GameController : Controller
     {
@@ -35,6 +36,10 @@ namespace TicTacToeApi.Controllers
             return Ok(games);
         }
 
+        /* TODO:
+         * - Player
+         *      - Can't make player with existing ID unless name matches
+         */
         // /game/start
         [HttpPost("start")]
         public async Task<ActionResult> Start(string formKey)
