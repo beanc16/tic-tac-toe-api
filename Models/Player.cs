@@ -19,16 +19,6 @@ namespace TicTacToeApi.Models
         public bool IsTurn { get; set; }
 
 
-        // --> Static
-        private static PersonNameGenerator _personGenerator { get; }
-
-        static Player()
-        {
-            _personGenerator = new PersonNameGenerator();
-        }
-        // <-- Static
-
-
         public Player(string id, string name, string mark, bool isCpu, bool isTurn)
         {
             if (id == null)
@@ -56,6 +46,16 @@ namespace TicTacToeApi.Models
             : this(null, null, BoardMark.X, false, false)
         {
         }
+
+
+        // --> Static
+        private static PersonNameGenerator _personGenerator { get; }
+
+        static Player()
+        {
+            _personGenerator = new PersonNameGenerator();
+        }
+        // <-- Static
 
 
 
