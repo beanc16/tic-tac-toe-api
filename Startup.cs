@@ -73,6 +73,11 @@ namespace TicTacToeApi
                     name: "players",
                     template: "/game/{gameId}/{controller=Players}/{action=Index}"
                 );
+
+                routes.MapRoute(
+                    name: "status",
+                    template: "/game/{gameId}/{controller=Status}/{action=Index}"
+                );
             });
         }
     }
