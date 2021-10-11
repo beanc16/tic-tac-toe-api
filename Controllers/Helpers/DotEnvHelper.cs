@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using dotenv.net;
 
@@ -23,7 +24,6 @@ namespace DotEnvHelpers
         
         private static void Load()
         {
-            System.Console.WriteLine("\n\n\nLOADING ENV VARIABLES\n\n\n");
             DotEnv.Load();
         }
 
@@ -37,13 +37,15 @@ namespace DotEnvHelpers
         
         public static string GetEnvVariable(string key)
         {
-            RefreshEnvVariables();
-            string test = System.Environment.GetEnvironmentVariable(key);
-            System.Console.WriteLine("\n\n\ntest: " + test + "\n\n\n");
-
-            foreach (string str in _env.Keys)
+            // dotenv.net doesn't load env variables on Heroku, fix that
+            if (_env[key] == null)
             {
-                System.Console.WriteLine("\n\n\n_env key: " + str + "\n\n\n");
+                string value = Environment.GetEnvironmentVariable(key);
+
+                if (value != null)
+                {
+                    _env[key] = value;
+                }
             }
 
             return _env[key];
