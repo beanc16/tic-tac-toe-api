@@ -67,7 +67,6 @@ namespace TicTacToeApi.Controllers
                         }
                         else if (ex is MongoWriteException)
                         {
-                            Console.WriteLine("((MongoWriteException)ex): " + ((MongoWriteException)ex));
                             code = ((MongoWriteException)ex).WriteError.Code;
                         }
 

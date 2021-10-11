@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using dotenv.net;
 
@@ -30,11 +31,23 @@ namespace DotEnvHelpers
 
         public static void RefreshEnvVariables()
         {
-            _env = DotEnv.Read();
+            Load();
+            Read();
         }
         
         public static string GetEnvVariable(string key)
         {
+            // dotenv.net doesn't load env variables on Heroku, fix that
+            if (!_env.ContainsKey(key))
+            {
+                string value = Environment.GetEnvironmentVariable(key);
+
+                if (value != null && value.Length > 0)
+                {
+                    _env[key] = value;
+                }
+            }
+
             return _env[key];
         }
     }
