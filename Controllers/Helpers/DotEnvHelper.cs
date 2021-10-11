@@ -37,15 +37,12 @@ namespace DotEnvHelpers
         
         public static string GetEnvVariable(string key)
         {
-            Console.WriteLine("\n\n\nkey: " + key);
-            Console.WriteLine("\n\n\nkey: " + key);
             // dotenv.net doesn't load env variables on Heroku, fix that
             if (!_env.ContainsKey(key))
             {
                 string value = Environment.GetEnvironmentVariable(key);
-                Console.WriteLine("\n\n\nvalue: " + value);
 
-                if (value != null)
+                if (value != null && value.Length > 0)
                 {
                     _env[key] = value;
                 }
