@@ -76,7 +76,12 @@ namespace TicTacToeApi.Controllers
 
                 // Display the most recent moves first
                 moveHistory.Reverse();
+
+                // Add given moves to game
                 games[0].MoveHistory.InsertRange(0, moveHistory);
+                games[0].UpdateAfterMove();
+
+                // Add moves to database
                 MongoConnection<Game>.ReplaceOne(Collections.GAMES, games[0], filter);
 
                 return Ok(games[0]);

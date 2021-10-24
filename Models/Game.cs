@@ -137,31 +137,33 @@ namespace TicTacToeApi.Models
 
         public void MarkColumn(BoardMark mark, int rowNum, int columnNum)
         {
-            Board lastBoard = MoveHistory.FindLast(_ => true);
-            Board newBoard = lastBoard.Clone();
+            // Make a new copy of the most recent board
+            Board newBoard = MoveHistory[0].Clone();
 
+            // Mark the given space and insert it into history
             newBoard.MarkColumn(mark, rowNum, columnNum);
-            MoveHistory.Add(newBoard);
+            MoveHistory.Insert(0, newBoard);
 
+            // Try to update game status as win or tie
             UpdateAfterMove();
         }
 
-        private void UpdateAfterMove()
+        public void UpdateAfterMove()
         {
-            Board lastBoard = MoveHistory.FindLast(_ => true);
+            Board mostRecentBoard = MoveHistory[0];
 
             // There's a winner
-            if (lastBoard.HasMatch())
+            if (mostRecentBoard.HasMatch())
             {
                 // Update status
                 Status = GameStatus.HAS_WINNER;
 
                 // Update winning move
-                WinningMove = lastBoard.Clone();
+                WinningMove = mostRecentBoard.Clone();
                 WinningMove.ClearAllButWinningMarks();
 
                 // Update players
-                string winningMark = lastBoard.GetWinningMark();
+                string winningMark = mostRecentBoard.GetWinningMark();
                 foreach (Player player in Players)
                 {
                     player.SetIsWinnerBasedOnMark(winningMark);
@@ -169,7 +171,7 @@ namespace TicTacToeApi.Models
             }
 
             // There's no matches and no more moves, thus there's a tie
-            else if (lastBoard.HasNoMoreMoves())
+            else if (mostRecentBoard.HasNoMoreMoves())
             {
                 // Update status
                 Status = GameStatus.HAS_TIE;
