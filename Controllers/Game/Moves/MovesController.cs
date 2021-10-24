@@ -38,10 +38,11 @@ namespace TicTacToeApi.Controllers
 
         /* TODO:
          * - moveHistory Rules
-         *      - Can only make a move if the game is IN_PROGRESS
          *      - Can only make one move at a time
          *      - Can only make a move if it's your turn
          *          - Update who's turn it is in player data
+         *      - Can't update move of player with useApiCpu set to true
+         *      - Must pass moves in the order that they occurred (1 move, 2 moves, 3 moves, etc.)
          * - AI
          *      - Add useApiCpu to player
          *      - Make CPU take a turn after non-CPU player goes if useApiCpu is true
@@ -61,8 +62,8 @@ namespace TicTacToeApi.Controllers
                     return BadRequest("moveHistory not found");
                 }
 
-                List<Board> moveHistory = obj["moveHistory"].ToObject<List<Board>>();
-                if (moveHistory == null || moveHistory.Count == 0)
+                List<Board> movesToMake = obj["moveHistory"].ToObject<List<Board>>();
+                if (movesToMake == null || movesToMake.Count == 0)
                 {
                     return BadRequest("No move was made");
                 }
@@ -74,17 +75,21 @@ namespace TicTacToeApi.Controllers
                     return BadRequest("No game exists with the ID: " + gameId);
                 }
 
-                // Display the most recent moves first
-                moveHistory.Reverse();
-
-                // Add given moves to game
-                games[0].MoveHistory.InsertRange(0, moveHistory);
-                games[0].UpdateAfterMove();
-
-                // Add moves to database
-                MongoConnection<Game>.ReplaceOne(Collections.GAMES, games[0], filter);
-
-                return Ok(games[0]);
+                // Game is not in progress
+                if (games[0].Status == GameStatus.HAS_WINNER)
+                {
+                    return BadRequest("The game with ID " + gameId + 
+                                      " already has a winner. " + 
+                                      "No more moves can be made.");
+                }
+                else if (games[0].Status == GameStatus.HAS_TIE)
+                {
+                    return BadRequest("The game with ID " + gameId + 
+                                      " has a tie. " + 
+                                      "No more moves can be made.");
+                }
+                
+                return MakeAMoveInGame(movesToMake, games[0], filter);
             }
 
             // Sent form data
@@ -92,6 +97,25 @@ namespace TicTacToeApi.Controllers
             {
                 return BadRequest("Must post data as content-type application/json");
             }
+        }
+
+        private OkObjectResult MakeAMoveInGame(
+            List<Board> movesToMake, 
+            Game game, 
+            FilterDefinition<Game> filter
+        )
+        {
+            // Display the most recent moves first
+            movesToMake.Reverse();
+
+            // Add given moves to game
+            game.MoveHistory.InsertRange(0, movesToMake);
+            game.UpdateAfterMove();
+
+            // Add moves to database
+            MongoConnection<Game>.ReplaceOne(Collections.GAMES, game, filter);
+
+            return Ok(game);
         }
     }
 }
