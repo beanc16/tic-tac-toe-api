@@ -9,14 +9,19 @@ namespace TicTacToeApi.Models
     {
         [BsonElement("_id")]
         public string Id { get; set; }
+
         [BsonElement("name")]
         public string Name { get; set; }
+
         [BsonElement("mark")]
         public string Mark { get; set; }
+
         [BsonElement("isCpu")]
         public bool IsCpu { get; set; }
+
         [BsonElement("isTurn")]
         public bool IsTurn { get; set; }
+        
         [BsonElement("isWinner")]
         public bool? IsWinner { get; set; }
 

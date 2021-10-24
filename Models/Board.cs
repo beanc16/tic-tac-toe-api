@@ -10,6 +10,21 @@ namespace TicTacToeApi.Models
     {
         [BsonElement("rows")]
         public List<BoardRow> Rows { get; private set; }
+        
+        public int NumOfMarks
+        {
+            get
+            {
+                int numOfMarks = 0;
+
+                foreach (BoardRow row in Rows)
+                {
+                    numOfMarks += row.NumOfMarks;
+                }
+
+                return numOfMarks;
+            }
+        }
 
         public Board()
         {

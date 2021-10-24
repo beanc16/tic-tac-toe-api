@@ -27,6 +27,8 @@ namespace TicTacToeApi.Models
 
         [BsonElement("expireAt")]
         public DateTime ExpireAt { get; set; }
+        
+        public int NumOfMarks { get => MoveHistory[0].NumOfMarks; }
 
         public Game()
         {

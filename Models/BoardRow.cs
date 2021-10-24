@@ -9,8 +9,25 @@ namespace TicTacToeApi.Models
     public class BoardRow
     {
         [BsonElement("columns")]
-        // public string[] Columns { get; private set; }
         public List<string> Columns { get; private set; }
+
+        public int NumOfMarks
+        {
+            get
+            {
+                int numOfMarks = 0;
+
+                foreach (string column in Columns)
+                {
+                    if (column != BoardMark.EMPTY)
+                    {
+                        numOfMarks++;
+                    }
+                }
+
+                return numOfMarks;
+            }
+        }
 
         public BoardRow()
         {
