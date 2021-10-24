@@ -38,12 +38,10 @@ namespace TicTacToeApi.Controllers
 
         /* TODO:
          * - moveHistory Rules
+         *      - Can only make a move if the game is IN_PROGRESS
          *      - Can only make one move at a time
          *      - Can only make a move if it's your turn
          *          - Update who's turn it is in player data
-         * - Win detection
-         *      - Bool function in Game & Board
-         *      - Add isWinner field to player
          * - AI
          *      - Add useApiCpu to player
          *      - Make CPU take a turn after non-CPU player goes if useApiCpu is true
