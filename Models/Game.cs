@@ -25,6 +25,9 @@ namespace TicTacToeApi.Models
         [BsonElement("expireAt")]
         public DateTime ExpireAt { get; set; }
 
+        [BsonElement("winningMove")]
+        public Board WinningMove { get; set; }
+
         public Game()
         {
             // Generate a random ID
@@ -50,7 +53,8 @@ namespace TicTacToeApi.Models
 
         [JsonConstructor]   // Called on JsonConvert.DeserializeObject
         public Game(string id, string status, List<Board> moveHistory,
-                    List<Player> players, DateTime expireAt)
+                    List<Player> players, DateTime expireAt, 
+                    Board winningMove)
         {
             // Id
             if (id != null && id.Length > 0)
@@ -117,6 +121,16 @@ namespace TicTacToeApi.Models
             // Ignore expireAt parameter, only use auto-generated ExpireAt
             // Expire 5 minutes from the time of creation
             ExpireAt = DateTime.Now.AddMinutes(5);
+
+            // WinningMove
+            if (winningMove != null)
+            {
+                WinningMove = winningMove;
+            }
+            else
+            {
+                winningMove = null;
+            }
         }
 
 
@@ -128,6 +142,44 @@ namespace TicTacToeApi.Models
 
             newBoard.MarkColumn(mark, rowNum, columnNum);
             MoveHistory.Add(newBoard);
+
+            UpdateAfterMove();
+        }
+
+        private void UpdateAfterMove()
+        {
+            Board lastBoard = MoveHistory.FindLast(_ => true);
+
+            // There's a winner
+            if (lastBoard.HasMatch())
+            {
+                // Update status
+                Status = GameStatus.HAS_WINNER;
+
+                // Update winning move
+                WinningMove = lastBoard.Clone();
+                WinningMove.ClearAllButWinningMarks();
+
+                // Update players
+                string winningMark = lastBoard.GetWinningMark();
+                foreach (Player player in Players)
+                {
+                    player.SetIsWinnerBasedOnMark(winningMark);
+                }
+            }
+
+            // There's no matches and no more moves, thus there's a tie
+            else if (lastBoard.HasNoMoreMoves())
+            {
+                // Update status
+                Status = GameStatus.HAS_TIE;
+
+                // Update players
+                foreach (Player player in Players)
+                {
+                    player.SetIsWinnerBasedOnMark(BoardMark.EMPTY);
+                }
+            }
         }
 
 

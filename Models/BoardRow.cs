@@ -68,6 +68,39 @@ namespace TicTacToeApi.Models
             Columns[columnNum] = mark.ToString();
         }
 
+        public void Clear()
+        {
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                Columns[i] = BoardMark.EMPTY;
+            }
+        }
+
+
+
+        public bool HasNoMoreMoves()
+        {
+            foreach (string column in Columns)
+            {
+                // There's still an empty space
+                if (column == BoardMark.EMPTY)
+                {
+                    return false;
+                }
+            }
+
+            // There's no more empty spaces
+            return true;
+        }
+        
+        public bool HasMatch()
+        {
+            // All columns match and are not empty
+            return (Columns[0] != BoardMark.EMPTY &&
+                    Columns[0] == Columns[1] &&
+                    Columns[1] == Columns[2]);
+        }
+
 
 
         public override string ToString()
