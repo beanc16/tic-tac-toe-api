@@ -22,11 +22,11 @@ namespace TicTacToeApi.Models
         [BsonElement("players")]
         public List<Player> Players { get; set; }
 
-        [BsonElement("expireAt")]
-        public DateTime ExpireAt { get; set; }
-
         [BsonElement("winningMove")]
         public Board WinningMove { get; set; }
+
+        [BsonElement("expireAt")]
+        public DateTime ExpireAt { get; set; }
 
         public Game()
         {
