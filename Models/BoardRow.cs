@@ -46,7 +46,7 @@ namespace TicTacToeApi.Models
                 Columns = columns;
             }
 
-            else
+            else if (columns == null || columns.Count == 0)
             {
                 Columns = new List<string>(new string[] {
                     BoardMark.EMPTY,
@@ -54,18 +54,29 @@ namespace TicTacToeApi.Models
                     BoardMark.EMPTY,
                 });
             }
+
+            else
+            {
+                Columns = new List<string>();
+
+                foreach (string col in columns)
+                {
+                    if (IsValidBoardValue(col))
+                    {
+                        Columns.Add(col);
+                    }
+                    else
+                    {
+                        Columns.Add(BoardMark.EMPTY);
+                    }
+                }
+            }
         }
 
 
 
         public bool IsValidColumnList(List<string> columns)
         {
-            Predicate<string> isValidBoardValue = 
-                (col) => (col == null || 
-                          col.ToLower() == "null" || 
-                          col.ToUpper() == "X" || 
-                          col.ToUpper() == "O");
-            
             /* Is not null, 
              * a list with exactly 3 values, 
              * and a list with all elements that are either:
@@ -75,7 +86,20 @@ namespace TicTacToeApi.Models
              * - "O"
              */
             return (columns != null && columns.Count == 3 && 
-                    columns.TrueForAll(isValidBoardValue));
+                    columns.TrueForAll(IsValidBoardValuePredicate()));
+        }
+
+        private bool IsValidBoardValue(string col)
+        {
+            return (col == null || 
+                    col.ToLower() == "null" || 
+                    col.ToUpper() == "X" || 
+                    col.ToUpper() == "O");
+        }
+
+        private Predicate<string> IsValidBoardValuePredicate()
+        {
+            return (col) => IsValidBoardValue(col);
         }
 
 
