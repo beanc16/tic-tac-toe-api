@@ -38,7 +38,7 @@ namespace TicTacToeApi.Controllers
 
         /* TODO:
          * - moveHistory Rules
-         *      - Can't remove moves
+         *      - Must pass moveHistory object with exactly 3 rows and exactly 3 columns
          *      - Can only make a move if it's your turn
          *          - Update who's turn it is in player data
          *      - Can't update move of player with useApiCpu set to true
@@ -109,18 +109,21 @@ namespace TicTacToeApi.Controllers
             filter = null;
             badRequest = null;
 
+            // Move history errors
             JObject obj = JsonConvert.DeserializeObject<JObject>(reqStr);
             GetMoveHistoryNotFoundError(obj, out badRequest);
 
             movesToMake = obj["moveHistory"].ToObject<List<Board>>();
-            GetNoMoveWasMadeError(movesToMake, badRequest, out badRequest);
+            GetMoveHistoryCannotBeEmptyArrayError(movesToMake, badRequest, out badRequest);
 
+            // Game errors
             filter = Game.GetFilterById(gameId);
             games = MongoConnection<Game>.Find(Collections.GAMES, filter);
             GetNoGameExistsWithThatIdError(gameId, games, badRequest, out badRequest);
-
             GetGameIsNotInProgressError(gameId, games, badRequest, out badRequest);
-            GetOneMoveAtATimeError(movesToMake, games, badRequest, out badRequest);
+
+            // Move errors
+            GetMovesErrors(movesToMake, games, badRequest, out badRequest);
         }
         
         private void GetMoveHistoryNotFoundError(
@@ -138,7 +141,7 @@ namespace TicTacToeApi.Controllers
             }
         }
         
-        private void GetNoMoveWasMadeError(
+        private void GetMoveHistoryCannotBeEmptyArrayError(
             List<Board> movesToMake,
             BadRequestObjectResult curBadRequest,
             out BadRequestObjectResult badRequest
@@ -153,9 +156,9 @@ namespace TicTacToeApi.Controllers
                 return;
             }
 
-            if (movesToMake == null || movesToMake.Count == 0)
+            if (movesToMake.Count == 0)
             {
-                badRequest = BadRequest("No move was made");
+                badRequest = BadRequest("moveHistory cannot be an empty array");
                 return;
             }
         }
@@ -212,7 +215,7 @@ namespace TicTacToeApi.Controllers
             }
         }
 
-        private void GetOneMoveAtATimeError(
+        private void GetMovesErrors(
             List<Board> movesToMake,
             List<Game> games,
             BadRequestObjectResult curBadRequest,
@@ -228,47 +231,56 @@ namespace TicTacToeApi.Controllers
                 return;
             }
 
-            for (int i = 1; i <= movesToMake.Count; i++)
+            for (int i = 0; i < movesToMake.Count; i++)
             {
-                // Move did not go up by one at a time
-                if (games[0].MoveHistory[0].NumOfMarks + i != movesToMake[i - 1].NumOfMarks)
+                // Set the current board
+                Board curBoard = movesToMake[i];
+
+                // Set the previous board
+                Board prevBoard = games[0].MoveHistory[0];
+                if (i != 0)
                 {
-                    // Set the current board
-                    Board curBoard = movesToMake[i - 1];
+                    prevBoard = movesToMake[i - 1];
+                }
 
-                    // Set the previous board
-                    Board prevBoard = games[0].MoveHistory[0];
-                    if (i != 1)
-                    {
-                        prevBoard = movesToMake[i - 2];
-                    }
+                bool movesWereChanged = Board.MovesWereChanged(prevBoard, curBoard);
+                Console.WriteLine("prevBoard: " + prevBoard);
+                Console.WriteLine("curBoard: " + curBoard);
+                Console.WriteLine("prevBoard.NumOfMarks: " + prevBoard.NumOfMarks);
+                Console.WriteLine("curBoard.NumOfMarks: " + curBoard.NumOfMarks);
+                Console.WriteLine("movesWereChanged: " + movesWereChanged);
 
-                    // The two boards have the same number of moves, thus no move was made
-                    if (prevBoard.NumOfMarks == curBoard.NumOfMarks)
-                    {
-                        // Force a no moves error to occur
-                        GetNoMoveWasMadeError(null, badRequest, out badRequest);
-                        return;
-                    }
+                bool moreThanOneMoveWasAdded = Board.MoreThanOneMoveWasAdded(prevBoard, curBoard);
+                Console.WriteLine("moreThanOneMoveWasAdded: " + moreThanOneMoveWasAdded);
 
-                    // Send error
-                    string err = String.Format(
-                        "You can only make one move at a time. " + 
-                        "The previous board has {0} moves and " + 
-                        "the current board has {1} moves.\n\n" +
-                        "Previous board:\n{2}\n\n" + 
-                        "Current board:\n{3}",
-                        prevBoard.NumOfMarks,
-                        curBoard.NumOfMarks,
-                        prevBoard,
-                        curBoard
-                    );
-                    badRequest = BadRequest(err);
+                if (Board.MoreThanOneMoveWasAdded(prevBoard, curBoard))
+                {
+                    badRequest = BadRequest("Can't make more than one move at a time");
+                    return;
+                }
+
+                else if (Board.OneOrMoreMovesWereRemoved(prevBoard, curBoard))
+                {
+                    badRequest = BadRequest("Can't remove moves");
+                    return;
+                }
+
+                // The previous moves' positions were changed
+                else if (movesWereChanged)
+                {
+                    badRequest = BadRequest("Can't change positions of existing moves");
+                    return;
+                }
+
+                // No moves were added
+                else if (Board.HasSameNumOfMoves(prevBoard, curBoard) && !movesWereChanged)
+                {
+                    badRequest = BadRequest("No moves were added");
                     return;
                 }
             }
         }
-
+        
 
 
         private OkObjectResult MakeAMoveInGame(
