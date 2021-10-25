@@ -244,14 +244,8 @@ namespace TicTacToeApi.Controllers
                 }
 
                 bool movesWereChanged = Board.MovesWereChanged(prevBoard, curBoard);
-                Console.WriteLine("prevBoard: " + prevBoard);
-                Console.WriteLine("curBoard: " + curBoard);
-                Console.WriteLine("prevBoard.NumOfMarks: " + prevBoard.NumOfMarks);
-                Console.WriteLine("curBoard.NumOfMarks: " + curBoard.NumOfMarks);
-                Console.WriteLine("movesWereChanged: " + movesWereChanged);
 
                 bool moreThanOneMoveWasAdded = Board.MoreThanOneMoveWasAdded(prevBoard, curBoard);
-                Console.WriteLine("moreThanOneMoveWasAdded: " + moreThanOneMoveWasAdded);
 
                 if (Board.MoreThanOneMoveWasAdded(prevBoard, curBoard))
                 {
