@@ -9,14 +9,21 @@ namespace TicTacToeApi.Models
     {
         [BsonElement("_id")]
         public string Id { get; set; }
+
         [BsonElement("name")]
         public string Name { get; set; }
+
         [BsonElement("mark")]
         public string Mark { get; set; }
+
         [BsonElement("isCpu")]
         public bool IsCpu { get; set; }
+
         [BsonElement("isTurn")]
         public bool IsTurn { get; set; }
+        
+        [BsonElement("isWinner")]
+        public bool? IsWinner { get; set; }
 
 
         public Player(string id, string name, string mark, bool isCpu, bool isTurn)
@@ -35,6 +42,7 @@ namespace TicTacToeApi.Models
             Mark = mark.ToString();
             IsCpu = isCpu;
             IsTurn = isTurn;
+            IsWinner = null;
         }
 
         public static Player FromBoardMarkIsCpuAndIsTurn(string mark, bool isCpu, bool isTurn)
@@ -72,6 +80,33 @@ namespace TicTacToeApi.Models
         private static string GenerateRandomName()
         {
             return _personGenerator.GenerateRandomFirstAndLastName();
+        }
+
+
+
+        public void SetIsWinnerBasedOnMark(string winningMark)
+        {
+            if (Mark == winningMark)
+            {
+                IsWinner = true;
+            }
+
+            else
+            {
+                IsWinner = false;
+            }
+        }
+
+
+
+        public bool IsXs()
+        {
+            return (Mark == BoardMark.X);
+        }
+
+        public bool IsOs()
+        {
+            return (Mark == BoardMark.O);
         }
 
 

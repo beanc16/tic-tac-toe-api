@@ -9,8 +9,25 @@ namespace TicTacToeApi.Models
     public class BoardRow
     {
         [BsonElement("columns")]
-        // public string[] Columns { get; private set; }
         public List<string> Columns { get; private set; }
+
+        public int NumOfMarks
+        {
+            get
+            {
+                int numOfMarks = 0;
+
+                foreach (string column in Columns)
+                {
+                    if (column != BoardMark.EMPTY)
+                    {
+                        numOfMarks++;
+                    }
+                }
+
+                return numOfMarks;
+            }
+        }
 
         public BoardRow()
         {
@@ -29,7 +46,7 @@ namespace TicTacToeApi.Models
                 Columns = columns;
             }
 
-            else
+            else if (columns == null || columns.Count == 0)
             {
                 Columns = new List<string>(new string[] {
                     BoardMark.EMPTY,
@@ -37,18 +54,29 @@ namespace TicTacToeApi.Models
                     BoardMark.EMPTY,
                 });
             }
+
+            else
+            {
+                Columns = new List<string>();
+
+                foreach (string col in columns)
+                {
+                    if (IsValidBoardValue(col))
+                    {
+                        Columns.Add(col);
+                    }
+                    else
+                    {
+                        Columns.Add(BoardMark.EMPTY);
+                    }
+                }
+            }
         }
 
 
 
         public bool IsValidColumnList(List<string> columns)
         {
-            Predicate<string> isValidBoardValue = 
-                (col) => (col == null || 
-                          col.ToLower() == "null" || 
-                          col.ToUpper() == "X" || 
-                          col.ToUpper() == "O");
-            
             /* Is not null, 
              * a list with exactly 3 values, 
              * and a list with all elements that are either:
@@ -58,7 +86,20 @@ namespace TicTacToeApi.Models
              * - "O"
              */
             return (columns != null && columns.Count == 3 && 
-                    columns.TrueForAll(isValidBoardValue));
+                    columns.TrueForAll(IsValidBoardValuePredicate()));
+        }
+
+        private bool IsValidBoardValue(string col)
+        {
+            return (col == null || 
+                    col.ToLower() == "null" || 
+                    col.ToUpper() == "X" || 
+                    col.ToUpper() == "O");
+        }
+
+        private Predicate<string> IsValidBoardValuePredicate()
+        {
+            return (col) => IsValidBoardValue(col);
         }
 
 
@@ -66,6 +107,39 @@ namespace TicTacToeApi.Models
         public void MarkColumn(BoardMark mark, int columnNum)
         {
             Columns[columnNum] = mark.ToString();
+        }
+
+        public void Clear()
+        {
+            for (int i = 0; i < Columns.Count; i++)
+            {
+                Columns[i] = BoardMark.EMPTY;
+            }
+        }
+
+
+
+        public bool HasNoMoreMoves()
+        {
+            foreach (string column in Columns)
+            {
+                // There's still an empty space
+                if (column == BoardMark.EMPTY)
+                {
+                    return false;
+                }
+            }
+
+            // There's no more empty spaces
+            return true;
+        }
+        
+        public bool HasMatch()
+        {
+            // All columns match and are not empty
+            return (Columns[0] != BoardMark.EMPTY &&
+                    Columns[0] == Columns[1] &&
+                    Columns[1] == Columns[2]);
         }
 
 
