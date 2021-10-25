@@ -10,7 +10,8 @@ namespace TicTacToeApi.Models
     {
         [BsonElement("rows")]
         public List<BoardRow> Rows { get; private set; }
-        
+
+        // TODO: Hide from API so it doesn't show up in what's returned or make this a function
         public int NumOfMarks
         {
             get
@@ -353,6 +354,61 @@ namespace TicTacToeApi.Models
                     Rows[1].Columns[1] == Rows[2].Columns[0]);      // Middle & bottom left
         }
 
+
+
+        public static bool OneOrMoreMovesWereRemoved(Board prevBoard, Board curBoard)
+        {
+            if (prevBoard.NumOfMarks > curBoard.NumOfMarks)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool MoreThanOneMoveWasAdded(Board prevBoard, Board curBoard)
+        {
+            if (prevBoard.NumOfMarks + 1 < curBoard.NumOfMarks)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool HasSameNumOfMoves(Board prevBoard, Board curBoard)
+        {
+            if (prevBoard.NumOfMarks == curBoard.NumOfMarks)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool MovesWereChanged(Board prevBoard, Board curBoard)
+        {
+            int numOfDifferentMoves = 0;
+            for (int i = 0; i < prevBoard.Rows.Count; i++)
+            {
+                for (int j = 0; j < prevBoard.Rows[i].Columns.Count; j++)
+                {
+                    // The current move is different
+                    if (prevBoard.Rows[i].Columns[j] != curBoard.Rows[i].Columns[j])
+                    {
+                        numOfDifferentMoves++;
+                    }
+
+                    // 1+ moves were changed
+                    if (numOfDifferentMoves > 1)    // The 1 different move will be the 1 move that was added
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
 
         public override string ToString()
